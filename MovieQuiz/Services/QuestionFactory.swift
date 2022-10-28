@@ -1,64 +1,73 @@
 import Foundation
 
 class QuestionFactory: QuestionFactoryProtocol {
-//    weak var delegate: QuestionFactoryDelegate?
+    //    weak var delegate: QuestionFactoryDelegate?
     
     private let moviesLoader: MoviesLoading
     private weak var delegate: QuestionFactoryDelegate?
     private var movies: [MostPopularMovie] = []
     
-//    private let questions: [QuizQuestion] = [
-//        QuizQuestion(
-//            image: "The Godfather",
-//            text: "Рейтинг этого фильма больше чем 6?",
-//            correctAnswer: true),
-//        QuizQuestion(
-//            image: "The Dark Knight",
-//            text: "Рейтинг этого фильма больше чем 6?",
-//            correctAnswer: true),
-//        QuizQuestion(
-//            image: "Kill Bill",
-//            text: "Рейтинг этого фильма больше чем 6?",
-//            correctAnswer: true),
-//        QuizQuestion(
-//            image: "The Avengers",
-//            text: "Рейтинг этого фильма больше чем 6?",
-//            correctAnswer: true),
-//        QuizQuestion(
-//            image: "Deadpool",
-//            text: "Рейтинг этого фильма больше чем 6?",
-//            correctAnswer: true),
-//        QuizQuestion(
-//            image: "The Green Knight",
-//            text: "Рейтинг этого фильма больше чем 6?",
-//            correctAnswer: true),
-//        QuizQuestion(
-//            image: "Old",
-//            text: "Рейтинг этого фильма больше чем 6?",
-//            correctAnswer: false),
-//        QuizQuestion(
-//            image: "The Ice Age Adventures of Buck Wild",
-//            text: "Рейтинг этого фильма больше чем 6?",
-//            correctAnswer: false),
-//        QuizQuestion(
-//            image: "Tesla",
-//            text: "Рейтинг этого фильма больше чем 6?",
-//            correctAnswer: false),
-//        QuizQuestion(
-//            image: "Vivarium",
-//            text: "Рейтинг этого фильма больше чем 6?",
-//            correctAnswer: false)
-//    ]
-//
+    private enum MoviesIsEmpty: Error {
+        case codeError
+    }
+    
+    //    private let questions: [QuizQuestion] = [
+    //        QuizQuestion(
+    //            image: "The Godfather",
+    //            text: "Рейтинг этого фильма больше чем 6?",
+    //            correctAnswer: true),
+    //        QuizQuestion(
+    //            image: "The Dark Knight",
+    //            text: "Рейтинг этого фильма больше чем 6?",
+    //            correctAnswer: true),
+    //        QuizQuestion(
+    //            image: "Kill Bill",
+    //            text: "Рейтинг этого фильма больше чем 6?",
+    //            correctAnswer: true),
+    //        QuizQuestion(
+    //            image: "The Avengers",
+    //            text: "Рейтинг этого фильма больше чем 6?",
+    //            correctAnswer: true),
+    //        QuizQuestion(
+    //            image: "Deadpool",
+    //            text: "Рейтинг этого фильма больше чем 6?",
+    //            correctAnswer: true),
+    //        QuizQuestion(
+    //            image: "The Green Knight",
+    //            text: "Рейтинг этого фильма больше чем 6?",
+    //            correctAnswer: true),
+    //        QuizQuestion(
+    //            image: "Old",
+    //            text: "Рейтинг этого фильма больше чем 6?",
+    //            correctAnswer: false),
+    //        QuizQuestion(
+    //            image: "The Ice Age Adventures of Buck Wild",
+    //            text: "Рейтинг этого фильма больше чем 6?",
+    //            correctAnswer: false),
+    //        QuizQuestion(
+    //            image: "Tesla",
+    //            text: "Рейтинг этого фильма больше чем 6?",
+    //            correctAnswer: false),
+    //        QuizQuestion(
+    //            image: "Vivarium",
+    //            text: "Рейтинг этого фильма больше чем 6?",
+    //            correctAnswer: false)
+    //    ]
+    //
     func loadData() {
         moviesLoader.loadMovies { result in
             DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }
-                 
+                
                 switch result {
                 case .success(let mostPopularMovies):
-                    self.movies = mostPopularMovies.items
-                    self.delegate?.didLoadDataFromServer()
+                    if !self.movies.isEmpty {
+                        self.movies = mostPopularMovies.items
+                        self.delegate?.didLoadDataFromServer()
+                    } else {
+                        self.delegate?.didFailToLoadData(with: MoviesIsEmpty.codeError)
+                    }
+                    
                 case .failure(let error):
                     self.delegate?.didFailToLoadData(with: error)
                 }
@@ -83,9 +92,6 @@ class QuestionFactory: QuestionFactoryProtocol {
                     self.delegate?.didFailToLoadData(with: error)
                     
                 }
-                
-                
-                
             }
             
             let rating = Float(movie.rating) ?? 0
@@ -96,7 +102,7 @@ class QuestionFactory: QuestionFactoryProtocol {
             DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }
                 self.delegate?.didReceiveNextQuestion(question: question)
-                    
+                
             }
         }
     }
