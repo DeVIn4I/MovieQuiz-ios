@@ -61,12 +61,12 @@ class QuestionFactory: QuestionFactoryProtocol {
                 
                 switch result {
                 case .success(let mostPopularMovies):
-                    if !self.movies.isEmpty {
-                        self.movies = mostPopularMovies.items
-                        self.delegate?.didLoadDataFromServer()
-                    } else {
+                    
+                    self.movies = mostPopularMovies.items
+                    self.delegate?.didLoadDataFromServer()
+                    if self.movies.isEmpty {
                         self.delegate?.didFailToLoadData(with: MoviesIsEmpty.codeError)
-                    }
+                    } 
                     
                 case .failure(let error):
                     self.delegate?.didFailToLoadData(with: error)
