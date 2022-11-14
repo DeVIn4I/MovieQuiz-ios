@@ -9,14 +9,15 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     @IBOutlet private weak var yesButton: UIButton!
     @IBOutlet private weak var activityIndicator: UIActivityIndicatorView!
     
-    //MARK: - Private var
-    private var currentQuestionIndex = 0
+    //MARK: - Private
+//    private var currentQuestionIndex = 0
     private var correctAnswers = 0
-    private let questionsAmount = 10
+//    private let questionsAmount = 10
     private var questionFactory: QuestionFactoryProtocol?
     private var currentQuestion: QuizQuestion?
     private var alertPresenter: AlertPresenterProtocol?
     private var statisticService: StatisticService?
+    private let presenter = MovieQuizPresenter()
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -78,7 +79,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     }
     
     private func restartQuiz() {
-        currentQuestionIndex = 0
+        presenter.resetQuestIndex()
         correctAnswers = 0
         questionFactory?.requestNextQuestion()
     }
@@ -87,7 +88,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         return QuizStepViewModel(
             image: UIImage(data: model.image) ?? UIImage(),
             question: model.text,
-            questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)"
+            questionNumber: "\(presenter.currentIndex() + 1)/\(presenter.questionsAmount)"
         )
     }
     
@@ -113,9 +114,9 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     private func showNextQuestionOrResults() {
         imageView.layer.borderWidth = 0
         
-        if currentQuestionIndex == questionsAmount - 1 {
+        if presenter.isLastQuestion() {
             
-            let text = statisticService?.store(correct: correctAnswers, total: questionsAmount)
+            let text = statisticService?.store(correct: correctAnswers, total: presenter.questionsAmount)
             let viewModel = AlertModel(
                 title: "Этот раунд окончен!",
                 message: text ?? "nil",
@@ -123,7 +124,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
                 completion: didShowAlert)
             alertPresenter?.showAlert(model: viewModel)
         } else {
-            currentQuestionIndex += 1
+            presenter.switchToNextQuestion()
             questionFactory?.requestNextQuestion()
         }
     }
