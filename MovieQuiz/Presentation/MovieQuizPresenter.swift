@@ -21,6 +21,15 @@ final class MovieQuizPresenter {
         
     }
     
+    func didReReceiveNextQuestion(question: QuizQuestion?) {
+        guard let question else { return }
+        currentQuestion = question
+        let viewModel = convert(model: question)
+        DispatchQueue.main.async { [weak self] in
+            self?.viewController?.show(quizStep: viewModel)
+        }
+    }
+    
     func noButtonClicked() {
         didAnswer(isYes: false)
     }
