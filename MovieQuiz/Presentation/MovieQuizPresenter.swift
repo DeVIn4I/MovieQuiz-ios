@@ -25,6 +25,12 @@ final class MovieQuizPresenter {
         
     }
     
+    func didAnswer(isCorrectAnswer: Bool) {
+        if isCorrectAnswer {
+            correctAnswers += 1
+        }
+    }
+    
     func showNextQuestionOrResults() {
         
         if self.isLastQuestion() {
@@ -70,10 +76,10 @@ final class MovieQuizPresenter {
     func isLastQuestion() -> Bool {
         currentQuestionIndex == questionsAmount - 1
     }
-    
-    func resetQuestIndex() {
-        currentQuestionIndex = 0
-    }
+//    
+//    func resetQuestIndex() {
+//        currentQuestionIndex = 0
+//    }
     
     func switchToNextQuestion() {
         currentQuestionIndex += 1

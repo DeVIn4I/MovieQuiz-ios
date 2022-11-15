@@ -11,7 +11,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     
     //MARK: - Private
 //    private var currentQuestionIndex = 0
-    private var correctAnswers = 0
+//    private var correctAnswers = 0
 //    private let questionsAmount = 10
     private var questionFactory: QuestionFactoryProtocol?
     private var currentQuestion: QuizQuestion?
@@ -78,9 +78,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     }
     
     func showAnswerResult(isCorrect: Bool) {
-        if isCorrect {
-            correctAnswers += 1
-        }
+        presenter.didAnswer(isCorrectAnswer: isCorrect)
         
         imageView.layer.borderWidth = 8
         imageView.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
@@ -91,7 +89,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
             guard let self = self else { return }
             
-            self.presenter.correctAnswers = self.correctAnswers
             self.presenter.questionFactory = self.questionFactory
             self.presenter.showNextQuestionOrResults()
             self.imageView.layer.borderWidth = 0
@@ -105,7 +102,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
             let model = AlertModel(title: result.title,
                                    message: result.text,
                                    buttonText: result.buttonText) {
-                self.presenter.resetQuestIndex()
+//                self.presenter.resetQuestIndex()
                 self.presenter.restartGame()
             }
             alertPresenter?.showAlert(model: model)
@@ -132,6 +129,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
             completion: { [weak self] in
                 guard let self = self else { return }
                 self.questionFactory?.loadData()
+                self.presenter.restartGame()
             })
         
         alertPresenter?.showAlert(model: viewModel)
