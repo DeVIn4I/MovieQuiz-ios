@@ -3,7 +3,7 @@ import UIKit
 final class MovieQuizPresenter: QuestionFactoryDelegate {
     //MARK: Private
     private var currentQuestionIndex = 0
-    private weak var viewController: MovieQuizViewController?
+    private weak var viewController: MovieQuizViewControllerProtocol?
     private var questionFactory: QuestionFactoryProtocol?
     
     //MARK: Variable
@@ -12,7 +12,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     var correctAnswers: Int = 0
     var statisticService: StatisticService!
     
-    init(viewController: MovieQuizViewController) {
+    init(viewController: MovieQuizViewControllerProtocol) {
         self.viewController = viewController
         
         statisticService = StatisticServiceImplementation()
@@ -44,7 +44,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     }
     
     //MARK: Private Function
-    private func convert(model: QuizQuestion) -> QuizStepViewModel {
+    func convert(model: QuizQuestion) -> QuizStepViewModel {
         return QuizStepViewModel(
             image: UIImage(data: model.image) ?? UIImage(),
             question: model.text,
