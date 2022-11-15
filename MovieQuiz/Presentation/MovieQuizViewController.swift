@@ -50,7 +50,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     
     //MARK: - AlertPresenterDelegate
     func didShowAlert() {
-        restartQuiz()
+        presenter.restartGame()
     }
     
     //MARK: - Actions
@@ -67,12 +67,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         imageView.image = quizStep.image
         textLabel.text = quizStep.question
         counterLabel.text = quizStep.questionNumber
-    }
-    
-    private func restartQuiz() {
-        presenter.resetQuestIndex()
-        correctAnswers = 0
-        questionFactory?.requestNextQuestion()
     }
     
     private func convert(model: QuizQuestion) -> QuizStepViewModel {
@@ -96,29 +90,27 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
             guard let self = self else { return }
-            self.showNextQuestionOrResults()
+            
+            self.presenter.correctAnswers = self.correctAnswers
+            self.presenter.questionFactory = self.questionFactory
+            self.presenter.showNextQuestionOrResults()
+            self.imageView.layer.borderWidth = 0
             self.noButton.isEnabled = true
             self.yesButton.isEnabled = true
         }
     }
     
-    private func showNextQuestionOrResults() {
-        imageView.layer.borderWidth = 0
-        
-        if presenter.isLastQuestion() {
-            
-            let text = statisticService?.store(correct: correctAnswers, total: presenter.questionsAmount)
-            let viewModel = AlertModel(
-                title: "Этот раунд окончен!",
-                message: text ?? "nil",
-                buttonText: "Сыграть еще раз?",
-                completion: didShowAlert)
-            alertPresenter?.showAlert(model: viewModel)
-        } else {
-            presenter.switchToNextQuestion()
-            questionFactory?.requestNextQuestion()
+    func show(quiz result: QuizResultsViewModel) {
+
+            let model = AlertModel(title: result.title,
+                                   message: result.text,
+                                   buttonText: result.buttonText) {
+                self.presenter.resetQuestIndex()
+                self.presenter.restartGame()
+            }
+            alertPresenter?.showAlert(model: model)
+
         }
-    }
     
     private func showLoadingIndicator() {
         activityIndicator.isHidden = false
