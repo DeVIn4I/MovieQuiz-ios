@@ -14,16 +14,19 @@ final class MovieQuizPresenter {
         )
     }
     
+    private func didAnswer(isYes: Bool) {
+        guard let currentQuestion else { return }
+        let givenAnswer = isYes
+        viewController?.showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
+        
+    }
+    
     func noButtonClicked() {
-        guard let currentQuestion = currentQuestion else { return }
-        let answerToQuestion = false
-        viewController?.showAnswerResult(isCorrect: answerToQuestion == currentQuestion.correctAnswer)
+        didAnswer(isYes: false)
     }
     
     func yesButtonClicked() {
-        guard let currentQuestion = currentQuestion else { return }
-        let answerToQuestion = true
-        viewController?.showAnswerResult(isCorrect: answerToQuestion == currentQuestion.correctAnswer)
+        didAnswer(isYes: true)
     }
     
     func isLastQuestion() -> Bool {
