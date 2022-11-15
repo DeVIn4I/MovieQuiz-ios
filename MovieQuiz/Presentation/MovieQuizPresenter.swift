@@ -1,15 +1,48 @@
 import UIKit
 
-final class MovieQuizPresenter {
-    let questionsAmount = 10
+final class MovieQuizPresenter: QuestionFactoryDelegate {
+    //MARK: Private
     private var currentQuestionIndex = 0
-    var currentQuestion: QuizQuestion?
-    weak var viewController: MovieQuizViewController?
+    private weak var viewController: MovieQuizViewController?
+    private var questionFactory: QuestionFactoryProtocol?
     
+    //MARK: Variable
+    let questionsAmount = 10
+    var currentQuestion: QuizQuestion?
     var correctAnswers: Int = 0
-    var questionFactory: QuestionFactoryProtocol?
     var statisticService: StatisticService = StatisticServiceImplementation()
     
+    init(viewController: MovieQuizViewController) {
+        self.viewController = viewController
+        
+        questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
+        questionFactory?.loadData()
+        viewController.showLoadingIndicator()
+    }
+    
+    //MARK: QuestionFactoryDelegate
+    func didReceiveNextQuestion(question: QuizQuestion?) {
+        guard let question else { return }
+        
+        currentQuestion = question
+        let viewModel = convert(model: question)
+        DispatchQueue.main.async { [weak self] in
+            self?.viewController?.show(quizStep: viewModel)
+            
+        }
+    }
+    
+    func didLoadDataFromServer() {
+        viewController?.hideLoadingIndicator()
+        questionFactory?.requestNextQuestion()
+    }
+    
+    func didFailToLoadData(with error: Error) {
+        let message = error.localizedDescription
+        viewController?.showNetworkError(message: message)
+    }
+    
+    //MARK: Private Function
     private func convert(model: QuizQuestion) -> QuizStepViewModel {
         return QuizStepViewModel(
             image: UIImage(data: model.image) ?? UIImage(),
@@ -25,6 +58,7 @@ final class MovieQuizPresenter {
         
     }
     
+    //MARK: Function
     func didAnswer(isCorrectAnswer: Bool) {
         if isCorrectAnswer {
             correctAnswers += 1
@@ -41,7 +75,7 @@ final class MovieQuizPresenter {
                 title: "Этот раунд окончен!",
                 text: text,
                 buttonText: "Сыграть еще раз?")
-                
+            
             viewController?.show(quiz: viewModel)
             
         } else {
@@ -76,10 +110,6 @@ final class MovieQuizPresenter {
     func isLastQuestion() -> Bool {
         currentQuestionIndex == questionsAmount - 1
     }
-//    
-//    func resetQuestIndex() {
-//        currentQuestionIndex = 0
-//    }
     
     func switchToNextQuestion() {
         currentQuestionIndex += 1
@@ -88,5 +118,4 @@ final class MovieQuizPresenter {
     func currentIndex() -> Int {
         currentQuestionIndex
     }
-    
 }
