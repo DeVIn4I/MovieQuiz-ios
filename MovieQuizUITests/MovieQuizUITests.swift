@@ -1,10 +1,3 @@
-//
-//  MovieQuizUITests.swift
-//  MovieQuizUITests
-//
-//  Created by Pavel Razumov on 11.11.2022.
-//
-
 import XCTest
 
 final class MovieQuizUITests: XCTestCase {
@@ -53,26 +46,7 @@ final class MovieQuizUITests: XCTestCase {
         
         XCTAssertFalse(firstPoster == secondPoster)
     }
-    
-    func testMe() throws {
-        
-        let app = XCUIApplication()
-        let yesButton = app/*@START_MENU_TOKEN@*/.buttons["Yes"]/*[[".buttons[\"Да\"]",".buttons[\"Yes\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/
-        yesButton.tap()
-        yesButton.tap()
-        yesButton.tap()
-        yesButton.tap()
-        yesButton.tap()
-        yesButton.tap()
-        yesButton.tap()
-        yesButton.tap()
-        yesButton.tap()
-        yesButton.tap()
-        yesButton.tap()
-        app.alerts["Этот раунд окончен!"].scrollViews.otherElements.buttons["Сыграть еще раз?"].swipeUp()
-        
-    }
-    
+
     func testFinishAlert() throws {
         
         for _ in 1...10 {
@@ -85,7 +59,6 @@ final class MovieQuizUITests: XCTestCase {
         XCTAssertTrue(alert.exists)
         XCTAssertTrue(alert.label == "Этот раунд окончен!")
         XCTAssertTrue(alert.buttons.firstMatch.label == "Сыграть еще раз?")
-        
     }
 
     func testDismissAlert() throws {
@@ -104,6 +77,5 @@ final class MovieQuizUITests: XCTestCase {
         
         XCTAssertFalse(alert.exists)
         XCTAssertTrue(indexLabel.label == "1/10")
-        
     }
 }
