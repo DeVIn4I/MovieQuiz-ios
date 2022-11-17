@@ -5,7 +5,7 @@ protocol StatisticService {
     var gamesCount: Int { get set }
     var bestGame: GameRecord { get set }
     
-    func store(correct count: Int, total amout: Int) -> String
+    func store(correct count: Int, total amount: Int) -> String
 }
 
 final class StatisticServiceImplementation: StatisticService {
@@ -46,15 +46,15 @@ final class StatisticServiceImplementation: StatisticService {
         }
     }
     
-    func store(correct count: Int, total amout: Int) -> String {
+    func store(correct count: Int, total amount: Int) -> String {
         
         let newCorrect = (userDefaults.integer(forKey: Keys.correct.rawValue)) + count
-        let newTotal = (userDefaults.integer(forKey: Keys.total.rawValue)) + amout
+        let newTotal = (userDefaults.integer(forKey: Keys.total.rawValue)) + amount
         
         userDefaults.set(newCorrect, forKey: Keys.correct.rawValue)
         userDefaults.set(newTotal, forKey: Keys.total.rawValue)
         
-        let currentRecord = GameRecord(correct: count, total: amout, date: Date())
+        let currentRecord = GameRecord(correct: count, total: amount, date: Date())
         if currentRecord.compareGameRecord(recordGR: bestGame) {
             bestGame = currentRecord
         }
@@ -63,7 +63,7 @@ final class StatisticServiceImplementation: StatisticService {
             gamesCount += 1
         }
         
-        return "Ваш результат: \(count) / \(amout)\nКоличество сыграных квизов: \(gamesCount)\nРекорд: \(bestGame.correct)/\(bestGame.total) (\(bestGame.date.dateTimeString))\nСредняя точность: \(String(format: "%.2f", totalAccuracy))%"
+        return "Ваш результат: \(count) / \(amount)\nКоличество сыграных квизов: \(gamesCount)\nРекорд: \(bestGame.correct)/\(bestGame.total) (\(bestGame.date.dateTimeString))\nСредняя точность: \(String(format: "%.2f", totalAccuracy))%"
     }
     
 
